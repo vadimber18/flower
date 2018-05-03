@@ -42,6 +42,9 @@ class DashboardView(BaseHandler):
             if name not in events.workers:
                 continue
             worker = events.workers[name]
+            if not worker.alive:
+                continue
+
             info = dict(values)
             info.update(self._as_dict(worker))
             info.update(status=worker.alive)
@@ -120,6 +123,9 @@ class DashboardUpdateHandler(websocket.WebSocketHandler):
         workers = OrderedDict()
 
         for name, worker in sorted(state.workers.items()):
+            if not worker.alive:
+                continue
+
             counter = state.counter[name]
             started = counter.get('task-started', 0)
             processed = counter.get('task-received', 0)
